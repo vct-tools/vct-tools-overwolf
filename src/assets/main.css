@@ -1,0 +1,43 @@
+@font-face {
+  font-family: "Din Next";
+  src: url(@/assets/fonts/dinnext.woff);
+}
+
+@font-face {
+  font-family: "Tungsten";
+  src: url(@/assets/fonts/tungsten.woff);
+}
+
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Din Next", sans-serif;
+  background: radial-gradient(circle, rgba(33, 52, 66, 1) 5%, rgba(28, 66, 73, 1) 100%);
+  background-attachment: fixed;
+  color: white;
+  user-select: none;
+
+  overflow-x: hidden;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+a {
+  color: currentColor;
+}
+
+.atk {
+  color: #f34453 !important;
+}
+
+.def {
+  color: #32af8a !important;
+}
