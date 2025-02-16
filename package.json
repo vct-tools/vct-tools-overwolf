@@ -13,7 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "vct-tools-components": "github:infinity-atom/vct-tools-components",
+    "vct-tools-components": "github:vct-tools/vct-tools-components",
     "vue": "^3.5.13"
   },
   "devDependencies": {
