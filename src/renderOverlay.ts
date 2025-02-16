@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import type { OverlaySettings } from "./overlayType";
 import { loadImg } from "@/load_img";
-import agents from "./agents";
+import { agents } from "vct-tools-components";
 import { nameFilter } from "@/overlayPreParse";
 
 type AbilityData = {
@@ -162,7 +162,7 @@ export function renderLoop(
   settings: Ref<OverlaySettings>,
   ctx: CanvasRenderingContext2D
 ): void {
-  const targetFps = 60;
+  const targetFps = 1;
   const frameTime = 1000 / targetFps;
   let lastFrameTime = performance.now();
 

@@ -20,5 +20,13 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url))
     }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        index: fileURLToPath(new URL("./index.html", import.meta.url)),
+        overlay_control: fileURLToPath(new URL("./overlay_control.html", import.meta.url))
+      }
+    }
   }
 });
