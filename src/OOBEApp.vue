@@ -1,10 +1,12 @@
 <template>
+  <UIDialogBox v-if="loginScreenOpen" header="Logging in...">
+    Please sign in to your Riot account in the external window.
+  </UIDialogBox>
+
   <div class="container">
     <div class="content-body">
       <HeaderBig>Welcome to VCT Tools</HeaderBig>
-      <p>
-        Please select what this installation will be used for.
-      </p>
+      <p>Please select what this installation will be used for.</p>
       <div class="tabs-container">
         <div :class="`tab ${selectedTab === 0 ? `selected` : ``}`" @click="selectedTab = 0">
           SERVER
@@ -15,15 +17,31 @@
       </div>
 
       <div class="tabs-content" v-if="selectedTab == 0">
-        <UILargeButton @click="openLoginScreen()">
-          LOGIN
-        </UILargeButton>
+        <UILargeButton @click="openLoginScreen()"> LOGIN </UILargeButton>
         <p>You will be asked to connect your Riot account with VCT Tools.</p>
-        <p>By creating a VCT Tools account, you agree to our <a href="https://vcttools.net/terms_of_service">Terms of Service</a> and <a href="https://vcttools.net/privacy">Privacy Policy</a>.</p>
+        <p>
+          By creating a VCT Tools account, you agree to our
+          <a href="https://vcttools.net/terms_of_service">Terms of Service</a> and
+          <a href="https://vcttools.net/privacy">Privacy Policy</a>.
+        </p>
       </div>
 
       <div class="tabs-content" v-if="selectedTab == 1">
-        <UIField></UIField>
+        <UISelect prefix="Server: " :items="serverLocations"></UISelect>
+        <div style="display: flex; width: 100%;">
+          <UIButtonLabel style="width: 40%">Room ID</UIButtonLabel>
+          <UIField></UIField>
+        </div>
+        <div style="display: flex; width: 100%;">
+          <UIButtonLabel style="width: 40%">Username</UIButtonLabel>
+          <UIField></UIField>
+        </div>
+        <div style="display: flex; width: 100%;">
+          <UIButtonLabel style="width: 40%">Password</UIButtonLabel>
+          <UIField></UIField>
+        </div>
+        <UILargeButton style="margin-top: 20px; margin-bottom: 20px;">Connect</UILargeButton>
+        <p>The tournament organiser will provide you with a Room ID, Username and Password.</p>
       </div>
     </div>
   </div>
@@ -110,16 +128,24 @@
 <script setup lang="ts">
 import HeaderBig from "./components/HeaderBig.vue";
 import { ref } from "vue";
-import { UIField, UILargeButton } from "vct-tools-components";
+import { UISelect, UILargeButton, UIDialogBox, UIButtonLabel, UIField } from "vct-tools-components";
 
+const serverLocations = ref(["AP_SOUTHEAST (SYDNEY)"]);
 const selectedTab = ref(0);
 
-const openLoginScreen = () => {
-  const w = window.open("https://auth.riotgames.com/authorize?redirect_uri=https://api.vcttools.net/v1/rso_flow/login_callback&client_id=65ff0b1c-e14f-4994-8164-5dd4c086d7ae&response_type=code&scope=openid+offline_access", "_blank");
-  if (w) {
-    w.addEventListener("message", (event) => {
+const loginScreenOpen = ref(false);
 
-    });
+const openLoginScreen = () => {
+  const w = window.open(
+    "https://auth.riotgames.com/authorize?redirect_uri=https://api.vcttools.net/v1/rso_flow/login_callback&client_id=65ff0b1c-e14f-4994-8164-5dd4c086d7ae&response_type=code&scope=openid+offline_access",
+    "_blank"
+  );
+  if (w) {
+    loginScreenOpen.value = true;
+
+    w.onbeforeunload = () => {
+      loginScreenOpen.value = false;
+    };
   }
 };
 </script>
