@@ -12,7 +12,7 @@
   margin: 0;
   padding: 0;
 
-  font-size: 2em;
+  font-size: 2.1em;
 
   text-transform: uppercase;
 }

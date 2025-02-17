@@ -1,11 +1,11 @@
 @font-face {
   font-family: "Din Next";
-  src: url(@/assets/fonts/dinnext.woff);
+  src: url(@/assets/fonts/Nunito-Regular.woff);
 }
 
 @font-face {
   font-family: "Tungsten";
-  src: url(@/assets/fonts/tungsten.woff);
+  src: url(@/assets/fonts/justdance_bold.woff);
 }
 
 * {
