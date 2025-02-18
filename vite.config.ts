@@ -24,8 +24,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        index: fileURLToPath(new URL("./index.html", import.meta.url)),
-        overlay_control: fileURLToPath(new URL("./overlay_control.html", import.meta.url))
+        index: fileURLToPath(new URL("./index.html", import.meta.url))
       }
     }
   }
