@@ -1,47 +1,88 @@
 <template>
-  <UIDialogBox v-if="loginScreenOpen" header="Logging in...">
-    Please sign in to your Riot account in the external window.
+  <UIDialogBox
+    header="Consent"
+    v-model="requestConsentScreen"
+    accept-button-text="Accept"
+    @accept="agreedToTerms = true"
+  >
+    <div style="text-align: center">
+      Please read and agree to the
+      <a href="https://vcttools.net/terms_of_service" target="_blank">Terms of Service</a> and
+      <a href="https://vcttools.net/privacy" target="_blank">Privacy Policy</a> before continuing.
+      <br /><br />
+      By clicking "Accept", you agree to the Terms of Service and Privacy Policy.
+    </div>
   </UIDialogBox>
 
   <div class="container">
-    <div class="content-body">
+    <div class="left">
       <HeaderBig>Welcome to VCT Tools</HeaderBig>
-      <p>Please select what this installation will be used for.</p>
-      <div class="tabs-container">
-        <div :class="`tab ${selectedTab === 0 ? `selected` : ``}`" @click="selectedTab = 0">
-          SERVER
+      <span v-if="agreedToTerms == false"
+        >We'll help you get started. Click "Continue" when you're ready.</span
+      >
+      <span v-if="agreedToTerms">Next, you'll need to fill in the tournament information.</span>
+
+      <UILargeButton
+        style="margin-top: 5em"
+        @click="requestConsentScreen = true"
+        v-if="agreedToTerms == false"
+        >Continue</UILargeButton
+      >
+      <UILargeButton
+        style="margin-top: 5em"
+        :disabled="!valid.v"
+        :disabled-label="valid.m"
+        v-if="agreedToTerms == true"
+        >Finish</UILargeButton
+      >
+    </div>
+    <div class="right">
+      <div class="panel-1" v-if="!agreedToTerms">
+        <div class="s" data-number="!">
+          If you are a tournament organizer who wants to create a tournament, please visit
+          VCTTools.net in your web browser.
         </div>
-        <div :class="`tab ${selectedTab === 1 ? `selected` : ``}`" @click="selectedTab = 1">
-          CLIENT
+        <div class="s" data-number="1">
+          The tournament organizer will provide you with a code, username and password.
+        </div>
+        <div class="s" data-number="2">
+          You will also need to specify the server location. You may need to enter an IP address or
+          select a server from the list.
+        </div>
+        <div class="s" data-number="3">
+          You won't need to sign up for an account. Only the tournament organizer has to identify
+          themselves.
         </div>
       </div>
+      <div class="panel-2" v-if="agreedToTerms">
+        <div class="s">
+          <HeaderSmall>Server Location</HeaderSmall>
+          <div style="display: flex; gap: 2px">
+            <UISelect
+              v-model="formData.selectedServer"
+              :items="[`Custom IP`, ...serverLocations.map((a) => a.name)]"
+              prefix="Server: "
+            ></UISelect>
+            <UIField v-model="formData.customServerIp" v-if="formData.selectedServer == `Custom IP`"></UIField>
+          </div>
+        </div>
 
-      <div class="tabs-content" v-if="selectedTab == 0">
-        <UILargeButton @click="openLoginScreen()"> LOGIN </UILargeButton>
-        <p>You will be asked to connect your Riot account with VCT Tools.</p>
-        <p>
-          By creating a VCT Tools account, you agree to our
-          <a href="https://vcttools.net/terms_of_service">Terms of Service</a> and
-          <a href="https://vcttools.net/privacy">Privacy Policy</a>.
-        </p>
-      </div>
+        <div class="s">
+          <HeaderSmall>Room Code</HeaderSmall>
+          <UIField v-model="formData.roomCode"></UIField>
+        </div>
 
-      <div class="tabs-content" v-if="selectedTab == 1">
-        <UISelect prefix="Server: " :items="serverLocations"></UISelect>
-        <div style="display: flex; width: 100%;">
-          <UIButtonLabel style="width: 40%">Room ID</UIButtonLabel>
-          <UIField></UIField>
+        <div class="s">
+          <HeaderSmall>Identification</HeaderSmall>
+          <div style="display: flex; gap: 2px">
+            <UIButtonLabel>Username</UIButtonLabel>
+            <UIButtonLabel>Password</UIButtonLabel>
+          </div>
+          <div style="display: flex; gap: 2px">
+            <UIField v-model="formData.username"></UIField>
+            <UIField v-model="formData.password"></UIField>
+          </div>
         </div>
-        <div style="display: flex; width: 100%;">
-          <UIButtonLabel style="width: 40%">Username</UIButtonLabel>
-          <UIField></UIField>
-        </div>
-        <div style="display: flex; width: 100%;">
-          <UIButtonLabel style="width: 40%">Password</UIButtonLabel>
-          <UIField></UIField>
-        </div>
-        <UILargeButton style="margin-top: 20px; margin-bottom: 20px;">Connect</UILargeButton>
-        <p>The tournament organiser will provide you with a Room ID, Username and Password.</p>
       </div>
     </div>
   </div>
@@ -53,37 +94,38 @@
   height: 100vh;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.content-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .tabs-container {
   color: #6b7476;
 
   font-size: 10pt;
-
   display: flex;
 }
 
-.tabs-container .tab {
-  padding: 5px 50px;
-  cursor: pointer;
-  border-bottom: 1px solid #6b7476;
-}
+.left {
+  width: 40%;
+  height: 100%;
+  background: #54758142;
 
-.tabs-container .tab.selected {
-  border-bottom: 4px solid #04ca8f;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  border-right: 4px solid #04ca8f;
+  border-top-right-radius: 25px;
+  border-bottom-right-radius: 25px;
+
   position: relative;
-  color: #04ca8f;
+
+  text-align: center;
+  padding-left: 25px;
+  padding-right: 25px;
 }
 
-.tabs-container .tab.selected::after {
+.left::after {
   content: "";
   background: url(@/assets/images/tab_selected.png);
   background-position: center;
@@ -95,57 +137,138 @@
 
   position: absolute;
 
-  top: 21px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  left: calc(100% + 4px);
+  transform: translateX(-50%) translateY(-50%) rotate(-90deg) scale(1.5);
 }
 
-.info {
-  border: 1px solid #6b7476;
-  background-color: #54758142;
+.right {
+  width: 60%;
+  height: 100%;
 
-  padding: 5px;
-  width: 100%;
-  max-width: 500px;
-
-  margin-bottom: 30px;
-
-  text-align: center;
+  padding: 40px;
 }
 
-.tabs-content {
-  width: 70%;
-  margin-top: 30px;
-
+.panel-1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 
-  text-align: center;
+  width: 100%;
+  height: 100%;
+
+  gap: 20px;
+}
+
+.panel-1 .s {
+  border: 1px solid #04ca8f;
+  padding: 10px;
+  padding-left: 20px;
+  border-radius: 10px;
+
+  position: relative;
+
+  width: 100%;
+}
+
+.panel-1 .s::before {
+  content: attr(data-number);
+  background: #04ca8f;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 1000px;
+
+  height: 30px;
+  width: 30px;
+
+  position: absolute;
+  top: 50%;
+  left: -15px;
+  transform: translateY(-50%);
+}
+
+.panel-2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  gap: 20px;
+}
+
+.panel-2 .s {
+  width: 100%;
 }
 </style>
 
 <script setup lang="ts">
+import { UILargeButton, UIDialogBox, UISelect, UIButtonLabel } from "vct-tools-components";
 import HeaderBig from "./components/HeaderBig.vue";
-import { ref } from "vue";
-import { UISelect, UILargeButton, UIDialogBox, UIButtonLabel, UIField } from "vct-tools-components";
 
-const serverLocations = ref(["AP_SOUTHEAST (SYDNEY)"]);
-const selectedTab = ref(0);
+import { ref, watch } from "vue";
+import HeaderSmall from "./components/HeaderSmall.vue";
+import UIField from "vct-tools-components/src/UIElement/UIField.vue";
 
-const loginScreenOpen = ref(false);
+const agreedToTerms = ref(false);
+const requestConsentScreen = ref(false);
 
-const openLoginScreen = () => {
-  const w = window.open(
-    "https://auth.riotgames.com/authorize?redirect_uri=https://api.vcttools.net/v1/rso_flow/login_callback&client_id=65ff0b1c-e14f-4994-8164-5dd4c086d7ae&response_type=code&scope=openid+offline_access",
-    "_blank"
-  );
-  if (w) {
-    loginScreenOpen.value = true;
+const serverLocations = ref([{ name: "AP Southeast (Sydney)", ip: "0.not.setup.yet.0.0.0" }]);
 
-    w.onbeforeunload = () => {
-      loginScreenOpen.value = false;
-    };
-  }
-};
+const formData = ref({
+  customServerIp: "172.0.0.1",
+  selectedServer: "Custom IP",
+  roomCode: "",
+  username: "",
+  password: ""
+});
+
+const valid = ref({ v: false, m: "All fields are required" });
+
+watch(
+  formData,
+  (n) => {
+    (() => {
+      if (n.selectedServer == "Custom IP" && n.customServerIp == "") {
+        valid.value.v = false;
+        valid.value.m = "All fields are required";
+        return;
+      }
+
+      if (n.roomCode == "") {
+        valid.value.v = false;
+        valid.value.m = "All fields are required";
+        return;
+      }
+
+      if (n.username == "") {
+        valid.value.v = false;
+        valid.value.m = "All fields are required";
+        return;
+      }
+
+      if (n.password == "") {
+        valid.value.v = false;
+        valid.value.m = "All fields are required";
+        return;
+      }
+
+      if (/\d\d\d-\d\d\d-\d\d\d/g.test(n.roomCode) == false) {
+        valid.value.v = false;
+        valid.value.m = "Invalid room code";
+        return;
+      }
+
+      valid.value.v = true;
+    })();
+  },
+  { deep: true }
+);
 </script>
